@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">FragInTheAir</string>
+
+    <string-array
+        name="string_array_name">
+        <item>origin</item>
+        <item>destination</item>
+        <item>departure_date</item>
+        <item>return_date</item>
+        <item>arrive_by</item>
+        <item>return_by</item>
+        <item>adults</item>
+        <item>children</item>
+        <item>infants</item>
+        <item>include_airlines</item>
+        <item>exclude_airlines</item>
+        <item>nonstop</item>
+        <item>max_price</item>
+        <item>currency</item>
+        <item>travel_class</item>
+        <item>number_of_results</item>
+
+    </string-array>
+</resources>
