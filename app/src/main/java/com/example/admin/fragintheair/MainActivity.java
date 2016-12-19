@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity implements MainFragment.onChangeMadeListener {
 
+    private static final String API_KEY = BuildConfig.API_KEY;
     String LOG_TAG = "MY ACTIVITY LOG";
 
     String ORIGIN_PARAM = "";
@@ -256,7 +257,7 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
             String jsonString = null;
 
             try {
-                final String BASE_URL = "https://api.sandbox.amadeus.com/v1.2/flights/low-fare-search?apikey=hTECY3NNxkDSXFhUaibATV45y0At80mG" ;
+                final String BASE_URL = "https://api.sandbox.amadeus.com/v1.2/flights/low-fare-search?apikey=" +API_KEY;
 
                 Uri uri = Uri.parse(BASE_URL)
                         .buildUpon()
