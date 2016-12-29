@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="9">
+    android:weightSum="9"
+    android:background="#5C6BC0">
 
     <AutoCompleteTextView
         android:id="@+id/departure_airport_editText"
@@ -13,8 +14,11 @@
         android:inputType="textPersonName"
         android:hint="Αναχώρηση από:"
         android:selectAllOnFocus="true"
-        android:layout_weight="2"
-        android:background="@android:color/darker_gray" />
+        android:layout_weight="1"
+        android:background="#C5CAE9"
+        android:layout_margin="5dp"
+        android:alpha="0.6"
+        android:radius="20dp" />
 
     <AutoCompleteTextView
         android:id="@+id/arrival_airport_editText"
@@ -24,7 +28,10 @@
         android:hint="Aφιξη σε:"
         android:layout_below="@+id/departure_airport_editText"
         android:selectAllOnFocus="true"
-        android:layout_weight="2" />
+        android:layout_weight="1"
+        android:background="#C5CAE9"
+        android:layout_margin="5dp"
+        android:alpha="0.6"/>
 
     <LinearLayout
         android:id="@+id/date_time_layout"
@@ -34,7 +41,9 @@
         android:weightSum="2"
         android:layout_weight="1"
         android:clickable="true"
-        android:background="@color/colorPrimary">
+        android:background="#C5CAE9"
+        android:alpha="0.6"
+        android:layout_margin="5dp">
 
         <TextView
             android:id="@+id/departure_date"
@@ -71,7 +80,9 @@
         android:layout_weight="1"
         android:clickable="true"
         android:onClick="showFragment1"
-        android:background="@color/colorAccent">
+        android:background="#C5CAE9"
+        android:layout_margin="5dp"
+        android:alpha="0.6">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -181,13 +192,13 @@
 
     <Button
         android:text="Find me some flights!"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="226dp"
+        android:layout_height="63dp"
         android:id="@+id/search_button"
         android:layout_centerHorizontal="true"
-        android:layout_weight="3"
         android:layout_gravity="center_horizontal"
-        android:background="@color/colorPrimaryDark"/>
+        android:background="@color/colorPrimaryDark"
+        android:layout_marginTop="20dp" />
 
 
 </LinearLayout>

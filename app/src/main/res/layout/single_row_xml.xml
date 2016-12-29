@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#4169e1"
-    android:padding="20dp">
+    android:padding="20dp"
+    android:id="@+id/custom_row"
+    android:background="@color/colorPrimary"
+    android:layout_margin="20dp">
 
 
     <TextView
@@ -11,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/arrivalTime_textview"
-        android:textColor="#fff"
+        android:textColor="#ff00ff"
         android:layout_alignBaseline="@+id/departureTime_textview"
         android:layout_alignBottom="@+id/departureTime_textview"
         android:layout_toRightOf="@+id/originAirport_textview"
@@ -24,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/destinationAirport_textview"
-        android:textColor="#fff"
+        android:textColor="#ff00ff"
         android:layout_marginTop="56dp"
         android:layout_alignParentTop="true"
         android:layout_alignLeft="@+id/arrivalTime_textview"
@@ -46,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/airline_textview"
-        android:textColor="#fff"
+        android:textColor="#ff00ff"
         android:layout_marginLeft="11dp"
         android:layout_marginStart="11dp"
         android:layout_above="@+id/originAirport_textview"
@@ -60,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/originAirport_textview"
-        android:textColor="#fff"
+        android:textColor="#ff00ff"
         android:layout_marginLeft="18dp"
         android:layout_marginStart="18dp"
         android:layout_alignBaseline="@+id/destinationAirport_textview"
@@ -73,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/departureTime_textview"
-        android:textColor="#fff"
+        android:textColor="#ff00ff"
         android:layout_above="@+id/airline_textview"
         android:layout_alignLeft="@+id/originAirport_textview"
         android:layout_alignStart="@+id/originAirport_textview" />
@@ -83,7 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fare_textview"
-        android:textColor="#fff"
+        android:textColor="#ff00ff"
         android:textSize="18sp"
         android:layout_alignBaseline="@+id/destinationAirport_textview"
         android:layout_alignBottom="@+id/destinationAirport_textview"
