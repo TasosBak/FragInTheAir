@@ -4,8 +4,9 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,7 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends FragmentActivity implements MainFragment.onChangeMadeListener {
+public class MainActivity extends AppCompatActivity implements MainFragment.onChangeMadeListener {
 
     private static final String API_KEY = BuildConfig.API_KEY;
     String LOG_TAG = "MY ACTIVITY LOG";
@@ -31,9 +32,11 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
 
     String[] params;
     String info;
-    Boolean bothWays;
+    Boolean bothWays = false;
 
-    int bufferLength;
+    String status, message;
+
+    int bufferLength, connectionError = 0;
 
 
 
@@ -55,6 +58,24 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
 
     }
 
+
+    public void showStatusDialog() {
+        Bundle args = new Bundle();
+        args.putString("status", status);
+        args.putString("message", message);
+
+        Log.i(LOG_TAG, "status: " + status + ", message: " + message);
+
+        FragmentManager manager = getSupportFragmentManager();
+        StatusDialog statusDialog = new StatusDialog();
+        statusDialog.setArguments(args);
+        statusDialog.show(manager, "StatusDialog");
+
+    }
+
+
+
+
     @Override
     public void onChangeMade(int id, String value) {
 
@@ -67,7 +88,19 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
                 DESTINATION_PARAM = value;
                 break;
             case 3:
+
+                //ka8arizei th lista ka8e fora pou exoume nea anazhthsh
+                results.clear();
+
                 klhshAsyncTask = new FetchInfo().execute(null, null, info);
+
+//                FragmentManager manager = getSupportFragmentManager();
+//                StatusDialog statusDialog = new StatusDialog();
+//                statusDialog.show(manager, "StatudDialog");
+
+
+
+
                 Log.i(LOG_TAG, "info: " + info);
 //                try {
 //                    klhshAsyncTask.get(0, TimeUnit.MILLISECONDS);
@@ -93,7 +126,17 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
         private String getDataFromJson(String AutocompleteJsonStr)
                 throws JSONException {
 
+
+
             JSONObject parentObject = new JSONObject(AutocompleteJsonStr);
+            if(connectionError == 1) {
+                status = parentObject.getString("status");
+                message = parentObject.getString("message");
+                //Toast.makeText(getApplicationContext(), "status :" + status + ", message :" + message, Toast.LENGTH_LONG).show();
+                showStatusDialog();
+                return null;
+            }
+
             JSONArray resultsArray = parentObject.getJSONArray("results");
 
             StringBuffer finalStringBuffer = new StringBuffer();
@@ -118,7 +161,7 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
 
 //                Log.d(LOG_TAG, "resultsArray length = " + resultsArray.length());
 //                Log.d(LOG_TAG, "i = " + i);
-//                Log.d(LOG_TAG, "flightObjects.size = " + flightObjects.size());
+//                Log.d(LOG_TAG, "results.size = " + results.size());
                 results.add(new Result());
                 results.get(0).setCurrency(parentObject.getString("currency"));
 
@@ -127,6 +170,7 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
                 JSONArray itinerariesArray = resultObject.getJSONArray("itineraries");
 
                 results.get(i).setItineraries(new ArrayList<Itinerary>());
+
                 for(int j=0; j<itinerariesArray.length(); j++) {
 
                     // ArrayList<Itinerary> tempItineraryList = new ArrayList<Itinerary>();
@@ -140,7 +184,10 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
 
                     JSONArray outboundFlightsArray = outboundParentObject.getJSONArray("flights");
 
+
                     results.get(i).itineraries.get(j).setOutbounds(new ArrayList<Flight>());
+                    results.get(i).itineraries.get(j).setResultId(i);
+
 
                     //gia ta outbound
                     for (int f = 0; f < outboundFlightsArray.length(); f++) {
@@ -230,25 +277,49 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
                         results.get(i).itineraries.get(j).outbounds.get(f).setTravelClass(travelClass);
                         results.get(i).itineraries.get(j).outbounds.get(f).setBookingCode(bookingCode);
                         results.get(i).itineraries.get(j).outbounds.get(f).setSeatsRemaining(seatsRemaining);
+
+                        //fare
+                        JSONObject fareObject = resultObject.getJSONObject("fare");
+
+                        results.get(i).itineraries.get(j).setFare(new Fare());
+                        String totalPrice = fareObject.getString("total_price");
+                        results.get(i).itineraries.get(j).fare.setTotalPrice(totalPrice);
+
+                        JSONObject pricePerAdultObject = fareObject.getJSONObject("price_per_adult");
+                        String adultTotalFare = pricePerAdultObject.getString("total_fare");
+                        String adultTax = pricePerAdultObject.getString("tax");
+                        results.get(i).itineraries.get(j).fare.setAdultTotalFare(adultTotalFare);
+                        results.get(i).itineraries.get(j).fare.setAdultTax(adultTax);
+
+                        JSONObject restrictionObject = fareObject.getJSONObject("restrictions");
+                        Boolean refundableBoolean = restrictionObject.getBoolean("refundable");
+                        Boolean changePenaltiesBoolean = restrictionObject.getBoolean("change_penalties");
+                        results.get(i).itineraries.get(j).fare.setRefundableBoolean(refundableBoolean);
+                        results.get(i).itineraries.get(j).fare.setChangePenaltiesBoolean(changePenaltiesBoolean);
                     }
 
-                    //gia ta inbound
 
-                    JSONObject inboundParentObject = itineraryObject.getJSONObject("inbound");
 
-                    JSONArray inboundFlightsArray = inboundParentObject.getJSONArray("flights");
+                    if(bothWays) {
+                        //gia ta inbound
 
-                    results.get(i).itineraries.get(j).setInbounds(new ArrayList<Flight>());
-                    for (int f = 0; f < inboundFlightsArray.length(); f++) {
+                        JSONObject inboundParentObject = itineraryObject.getJSONObject("inbound");
 
-                        results.get(i).itineraries.get(j).addToInbounds(new Flight());
+                        JSONArray inboundFlightsArray = inboundParentObject.getJSONArray("flights");
 
-                        JSONObject flightObject = inboundFlightsArray.getJSONObject(f);
 
-                        String departsAt = flightObject.getString("departs_at");
-                        String arrivesAt = flightObject.getString("arrives_at");
+                        results.get(i).itineraries.get(j).setResultId(i);
+                        results.get(i).itineraries.get(j).setInbounds(new ArrayList<Flight>());
+                        for (int f = 0; f < inboundFlightsArray.length(); f++) {
 
-                        Log.i(LOG_TAG, "result: " + i + ", itinerary: " + j + ", outbound: " + f);
+                            results.get(i).itineraries.get(j).addToInbounds(new Flight());
+
+                            JSONObject flightObject = inboundFlightsArray.getJSONObject(f);
+
+                            String departsAt = flightObject.getString("departs_at");
+                            String arrivesAt = flightObject.getString("arrives_at");
+
+                            Log.i(LOG_TAG, "result: " + i + ", itinerary: " + j + ", outbound: " + f);
 
 
 //                        Result tempResult;
@@ -262,91 +333,91 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
 //
 //                        tempList.get(f).setDepartsAt(departsAt);
 
-                        results.get(i).itineraries.get(j).inbounds.get(f).setDepartsAt(departsAt);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setDepartsAt(departsAt);
 
 
-                        //results.get(i).itineraries.get(j).outbounds.get(f).setDepartsAt(departsAt);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setArrivesAt(arrivesAt);
+                            //results.get(i).itineraries.get(j).outbounds.get(f).setDepartsAt(departsAt);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setArrivesAt(arrivesAt);
 
 
+                            JSONObject originObject = flightObject.getJSONObject("origin");
+                            String originAirport = originObject.getString("airport");
+                            String originTerminal = null;
+                            try {
+                                originTerminal = originObject.getString("terminal");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            JSONObject destinationObject = flightObject.getJSONObject("destination");
+                            String destinationAirport = destinationObject.getString("airport");
+                            String marketingAirline = null;
+                            try {
+                                marketingAirline = flightObject.getString("marketing_airline");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            String operatingAirline = null;
+                            try {
+                                operatingAirline = flightObject.getString("operating_airline");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            String flightNumber = null;
+                            try {
+                                flightNumber = flightObject.getString("flight_number");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            String aircraft = null;
+                            try {
+                                aircraft = flightObject.getString("aircraft");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            results.get(i).itineraries.get(j).inbounds.get(f).setOriginAirport(originAirport);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setOriginTerminal(originTerminal);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setDestinationAirport(destinationAirport);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setMarketingAirline(marketingAirline);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setOperatingAirline(operatingAirline);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setFlightNumber(flightNumber);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setAircraft(aircraft);
+
+                            JSONObject bookingInfoObject = flightObject.getJSONObject("booking_info");
+                            String travelClass = bookingInfoObject.getString("travel_class");
+                            String bookingCode = bookingInfoObject.getString("booking_code");
+                            String seatsRemaining = bookingInfoObject.getString("seats_remaining");
 
 
+                            results.get(i).itineraries.get(j).inbounds.get(f).setTravelClass(travelClass);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setBookingCode(bookingCode);
+                            results.get(i).itineraries.get(j).inbounds.get(f).setSeatsRemaining(seatsRemaining);
 
+                            //fare
+                            JSONObject fareObject = resultObject.getJSONObject("fare");
 
-                        JSONObject originObject = flightObject.getJSONObject("origin");
-                        String originAirport = originObject.getString("airport");
-                        String originTerminal = null;
-                        try {
-                            originTerminal = originObject.getString("terminal");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            results.get(i).itineraries.get(j).setFare(new Fare());
+                            String totalPrice = fareObject.getString("total_price");
+                            results.get(i).itineraries.get(j).fare.setTotalPrice(totalPrice);
+
+                            JSONObject pricePerAdultObject = fareObject.getJSONObject("price_per_adult");
+                            String adultTotalFare = pricePerAdultObject.getString("total_fare");
+                            String adultTax = pricePerAdultObject.getString("tax");
+                            results.get(i).itineraries.get(j).fare.setAdultTotalFare(adultTotalFare);
+                            results.get(i).itineraries.get(j).fare.setAdultTax(adultTax);
+
+                            JSONObject restrictionObject = fareObject.getJSONObject("restrictions");
+                            Boolean refundableBoolean = restrictionObject.getBoolean("refundable");
+                            Boolean changePenaltiesBoolean = restrictionObject.getBoolean("change_penalties");
+                            results.get(i).itineraries.get(j).fare.setRefundableBoolean(refundableBoolean);
+                            results.get(i).itineraries.get(j).fare.setChangePenaltiesBoolean(changePenaltiesBoolean);
                         }
-
-                        JSONObject destinationObject = flightObject.getJSONObject("destination");
-                        String destinationAirport = destinationObject.getString("airport");
-                        String marketingAirline = null;
-                        try {
-                            marketingAirline = flightObject.getString("marketing_airline");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        String operatingAirline = null;
-                        try {
-                            operatingAirline = flightObject.getString("operating_airline");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        String flightNumber = null;
-                        try {
-                            flightNumber = flightObject.getString("flight_number");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        String aircraft = null;
-                        try {
-                            aircraft = flightObject.getString("aircraft");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        results.get(i).itineraries.get(j).inbounds.get(f).setOriginAirport(originAirport);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setOriginTerminal(originTerminal);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setDestinationAirport(destinationAirport);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setMarketingAirline(marketingAirline);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setOperatingAirline(operatingAirline);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setFlightNumber(flightNumber);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setAircraft(aircraft);
-
-                        JSONObject bookingInfoObject = flightObject.getJSONObject("booking_info");
-                        String travelClass = bookingInfoObject.getString("travel_class");
-                        String bookingCode = bookingInfoObject.getString("booking_code");
-                        String seatsRemaining = bookingInfoObject.getString("seats_remaining");
-
-
-                        results.get(i).itineraries.get(j).inbounds.get(f).setTravelClass(travelClass);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setBookingCode(bookingCode);
-                        results.get(i).itineraries.get(j).inbounds.get(f).setSeatsRemaining(seatsRemaining);
                     }
 
 
                 }
-                //fare
-                JSONObject fareObject = resultObject.getJSONObject("fare");
 
-                String totalPrice = fareObject.getString("total_price");
-                results.get(i).setTotalPrice(totalPrice);
-
-                JSONObject pricePerAdultObject = fareObject.getJSONObject("price_per_adult");
-                String adultTotalFare = pricePerAdultObject.getString("total_fare");
-                String adultTax = pricePerAdultObject.getString("tax");
-                results.get(i).setAdultTotalFare(adultTotalFare);
-                results.get(i).setAdultTax(adultTax);
-
-                JSONObject restrictionObject = fareObject.getJSONObject("restrictions");
-                Boolean refundableBoolean = restrictionObject.getBoolean("refundable");
-                Boolean changePenaltiesBoolean = restrictionObject.getBoolean("change_penalties");
-                results.get(i).setRefundableBoolean(refundableBoolean);
-                results.get(i).setChangePenaltiesBoolean(changePenaltiesBoolean);
 
 
 //            String objectValue = finalObject.getString(value);
@@ -367,8 +438,8 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
 //            for(int i=0; i<resultsArray.length(); i++) {
 //
 //                JSONObject finalObject = resultsArray.getJSONObject(i);
-//                flightObjects.add(new FlightObject());
-//                flightObjects.get(i);
+//                results.add(new FlightObject());
+//                results.get(i);
 //
 //                String objectValue = finalObject.getString(value);
 //                String objectLabel = finalObject.getString(label);
@@ -406,12 +477,15 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
                 Uri uri = Uri.parse(BASE_URL)
                         .buildUpon()
                         .appendQueryParameter("origin", "LHR")
-                        .appendQueryParameter("destination", "ATH")
-                        .appendQueryParameter("departure_date", "2016-12-28")
-                        .appendQueryParameter("return_date", "2016-12-30")
+                        .appendQueryParameter("destination", "AT")
+                        .appendQueryParameter("departure_date", "2016-12-30")
+                        //.appendQueryParameter("return_date", "2016-12-30")
+
                         .appendQueryParameter("currency", "EUR")
                         .appendQueryParameter("nonstop","false")
                         .build();
+
+                //bothWays = true;
 
                 URL url = new URL(uri.toString());
 
@@ -422,11 +496,60 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
+
+                if(!urlConnection.getResponseMessage().equals("OK")) {
+
+                    Log.v(LOG_TAG, "input stream: " + urlConnection.getResponseMessage());
+                    InputStream errorStream = urlConnection.getErrorStream();
+                    BufferedReader bReader = null;
+                    bReader = new BufferedReader(new InputStreamReader(errorStream));
+                    StringBuffer errorBuffer = new StringBuffer();
+
+
+                    String line2;
+                    while ((line2 = bReader.readLine()) != null) {
+                        // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                        // But it does make debugging a *lot* easier if you print out the completed
+                        // buffer for debugging.
+
+
+                        errorBuffer.append(line2 + "\n");
+                    }
+
+                    Log.v(LOG_TAG, "errorBuffer: " + errorBuffer);
+
+                    connectionError = 1;
+
+                    jsonString = errorBuffer.toString();
+
+                    bReader.close();
+                    urlConnection.disconnect();
+                    return getDataFromJson(jsonString);
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
+                Log.v(LOG_TAG, "input stream: " + inputStream);
                 StringBuffer buffer = new StringBuffer();
+
                 if (inputStream == null) {
                     // Nothing to do.
+
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -456,12 +579,14 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
                 }
 
                 jsonString = buffer.toString();
-                Log.v(LOG_TAG, "JSON String: ΛΛΕΡΑ" + jsonString);
+                Log.v(LOG_TAG, "To lathos:" + jsonString);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the data, there's no point in attemping
                 // to parse it.
                 return null;
+            } catch (JSONException e) {
+                e.printStackTrace();
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -475,6 +600,7 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
                 }
             }
             try {
+                connectionError = 0;
                 return getDataFromJson(jsonString);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
@@ -513,7 +639,7 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
             transaction.commit();
 */
 
-            //edw tha prospa8hsw na steilw thn ArrayList me ta flightObjects pou gemisa enw
+            //edw tha prospa8hsw na steilw thn ArrayList me ta results pou gemisa enw
             // ekana parsing thn apokrish tou JSON
 
             MyListFragment listFragment = new MyListFragment();
@@ -522,7 +648,7 @@ public class MainActivity extends FragmentActivity implements MainFragment.onCha
             //to FlightObject mou kai na xrhsimopoihsw putParcelableArrayList/getParcelableArrayList
             //gia thn antallagh dedomenwn apo activity se fragment
 
-            listArgs.putParcelableArrayList("flight objects", results);
+            listArgs.putParcelableArrayList("results", results);
             listFragment.setArguments(listArgs);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.activity_main, listFragment);

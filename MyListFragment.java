@@ -7,9 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -20,26 +18,23 @@ import java.util.ArrayList;
 public class MyListFragment extends ListFragment {
     String LOG_TAG = "TTTAG LOG";
 
+    public ArrayList<Result> results = new ArrayList<Result>();
+
+
+    public ArrayList<Itinerary> emptyList = new ArrayList<Itinerary>();
+
     itemClickedListener mCallback;
-
-    Result result;
-
-    public ArrayList<Result> flightObjects = new ArrayList<Result>();
-
-    TextView text, text2;
-    ListView list;
-
+    Itinerary itinerary;
 
     public interface itemClickedListener {
-        public void itemClicked(int resultPosition, int itineraryPosition);
+        public void itemClicked(int position);
+
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-
-        result = (Result) getListView().getItemAtPosition(position);
-        mCallback.itemClicked(position, 2);
+        //Toast.makeText(getContext(), "position: " + position, Toast.LENGTH_SHORT).show();
     }
 
     @Nullable
@@ -55,14 +50,19 @@ public class MyListFragment extends ListFragment {
     public void onStart() {
         super.onStart();
         Bundle args = getArguments();
-        flightObjects = args.getParcelableArrayList("flight objects");
+        results = args.getParcelableArrayList("results");
         Log.i(LOG_TAG, "onStart");
-        if(1 == 1) {
-            ListAdapter adapter = new CustomAdapter(getActivity(), flightObjects);
-            //list.setAdapter(adapter);
-            setListAdapter(adapter);
-            Log.i(LOG_TAG, "1 == 1");
+
+
+        CustomAdapter adapter = new CustomAdapter(getActivity(), emptyList);
+        setListAdapter(adapter);
+
+        for (int i = 0; i < results.size(); i++) {
+            for (int j = 0; j < results.get(i).itineraries.size(); j++) {
+                adapter.add(results.get(i).itineraries.get(j));
+            }
         }
+
     }
 
     @Override
