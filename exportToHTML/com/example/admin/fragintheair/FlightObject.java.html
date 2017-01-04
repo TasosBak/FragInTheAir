@@ -1,0 +1,268 @@
+<html>
+<head>
+<title>FlightObject.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+FlightObject.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">com.example.admin.fragintheair; 
+ 
+</span><span class="s0">import </span><span class="s1">android.os.Parcel; 
+</span><span class="s0">import </span><span class="s1">android.os.Parcelable; 
+ 
+</span><span class="s0">public class </span><span class="s1">FlightObject </span><span class="s0">implements </span><span class="s1">Parcelable { 
+    String departsAt; 
+    String arrivesAt; 
+ 
+    String originAirport; 
+    String originTerminal; 
+ 
+    String destinationAirport; 
+    String destinationMarketingAirline; </span><span class="s2">//Γερο:στο JSON Array τα marketing_airline, operating_airline, flight_number και aircraft δεν είναι κάτω απο το destination</span><span class="s1"> 
+    String destinationOperatingAirline; 
+    String destinationFlightNumber; 
+    String destinationAircraft; 
+ 
+    String bookingInfoTravelClass; 
+    String bookingInfoBookingCode; 
+    String bookingInfoSeatsRemaining; 
+ 
+    String totalPrice; 
+ 
+    String adultTotalFare; 
+    String adultTax; 
+ 
+    Boolean refundableBoolean; 
+    Boolean changePenaltiesBoolean; 
+ 
+    String currency; 
+ 
+    </span><span class="s0">public </span><span class="s1">FlightObject() { 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getCurrency() { 
+        </span><span class="s0">return </span><span class="s1">currency; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setCurrency(String currency) { 
+        </span><span class="s0">this</span><span class="s1">.currency = currency; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getDepartsAt() { 
+        </span><span class="s0">return </span><span class="s1">departsAt; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setDepartsAt(String departsAt) { 
+        </span><span class="s0">this</span><span class="s1">.departsAt = departsAt; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getArrivesAt() { 
+        </span><span class="s0">return </span><span class="s1">arrivesAt; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setArrivesAt(String arrivesAt) { 
+        </span><span class="s0">this</span><span class="s1">.arrivesAt = arrivesAt; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getOriginAirport() { 
+        </span><span class="s0">return </span><span class="s1">originAirport; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setOriginAirport(String originAirport) { 
+        </span><span class="s0">this</span><span class="s1">.originAirport = originAirport; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getOriginTerminal() { 
+        </span><span class="s0">return </span><span class="s1">originTerminal; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getDestinationAirport() { </span><span class="s0">return </span><span class="s1">destinationAirport; } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setDestinationAirport(String destinationAirport) { </span><span class="s0">this</span><span class="s1">.destinationAirport = destinationAirport; } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setOriginTerminal(String originTerminal) { 
+        </span><span class="s0">this</span><span class="s1">.originTerminal = originTerminal; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getDestinationMarketingAirline() { 
+        </span><span class="s0">return </span><span class="s1">destinationMarketingAirline; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setDestinationMarketingAirline(String destinationMarketingAirline) { 
+        </span><span class="s0">this</span><span class="s1">.destinationMarketingAirline = destinationMarketingAirline; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getDestinationOperatingAirline() { 
+        </span><span class="s0">return </span><span class="s1">destinationOperatingAirline; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setDestinationOperatingAirline(String destinationOperatingAirline) { 
+        </span><span class="s0">this</span><span class="s1">.destinationOperatingAirline = destinationOperatingAirline; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getDestinationFlightNumber() { 
+        </span><span class="s0">return </span><span class="s1">destinationFlightNumber; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setDestinationFlightNumber(String destinationFlightNumber) { 
+        </span><span class="s0">this</span><span class="s1">.destinationFlightNumber = destinationFlightNumber; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getDestinationAircraft() { 
+        </span><span class="s0">return </span><span class="s1">destinationAircraft; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setDestinationAircraft(String destinationAircraft) { 
+        </span><span class="s0">this</span><span class="s1">.destinationAircraft = destinationAircraft; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getBookingInfoTravelClass() { 
+        </span><span class="s0">return </span><span class="s1">bookingInfoTravelClass; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setBookingInfoTravelClass(String bookingInfoTravelClass) { 
+        </span><span class="s0">this</span><span class="s1">.bookingInfoTravelClass = bookingInfoTravelClass; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getBookingInfoBookingCode() { 
+        </span><span class="s0">return </span><span class="s1">bookingInfoBookingCode; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setBookingInfoBookingCode(String bookingInfoBookingCode) { 
+        </span><span class="s0">this</span><span class="s1">.bookingInfoBookingCode = bookingInfoBookingCode; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getBookingInfoSeatsRemaining() { 
+        </span><span class="s0">return </span><span class="s1">bookingInfoSeatsRemaining; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setBookingInfoSeatsRemaining(String bookingInfoSeatsRemaining) { 
+        </span><span class="s0">this</span><span class="s1">.bookingInfoSeatsRemaining = bookingInfoSeatsRemaining; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getTotalPrice() { 
+        </span><span class="s0">return </span><span class="s1">totalPrice; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setTotalPrice(String totalPrice) { 
+        </span><span class="s0">this</span><span class="s1">.totalPrice = totalPrice; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getAdultTotalFare() { 
+        </span><span class="s0">return </span><span class="s1">adultTotalFare; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setAdultTotalFare(String adultTotalFare) { 
+        </span><span class="s0">this</span><span class="s1">.adultTotalFare = adultTotalFare; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String getAdultTax() { 
+        </span><span class="s0">return </span><span class="s1">adultTax; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setAdultTax(String adultTax) { 
+        </span><span class="s0">this</span><span class="s1">.adultTax = adultTax; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">Boolean getRefundableBoolean() { 
+        </span><span class="s0">return </span><span class="s1">refundableBoolean; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setRefundableBoolean(Boolean refundableBoolean) { 
+        </span><span class="s0">this</span><span class="s1">.refundableBoolean = refundableBoolean; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">Boolean getChangePenaltiesBoolean() { 
+        </span><span class="s0">return </span><span class="s1">changePenaltiesBoolean; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setChangePenaltiesBoolean(Boolean changePenaltiesBoolean) { 
+        </span><span class="s0">this</span><span class="s1">.changePenaltiesBoolean = changePenaltiesBoolean; 
+    } 
+ 
+    </span><span class="s0">protected </span><span class="s1">FlightObject(Parcel in) { 
+        departsAt = in.readString(); 
+        arrivesAt = in.readString(); 
+        originAirport = in.readString(); 
+        originTerminal = in.readString(); 
+        destinationAirport = in.readString(); 
+        destinationMarketingAirline = in.readString(); 
+        destinationOperatingAirline = in.readString(); 
+        destinationFlightNumber = in.readString(); 
+        destinationAircraft = in.readString(); 
+        bookingInfoTravelClass = in.readString(); 
+        bookingInfoBookingCode = in.readString(); 
+        bookingInfoSeatsRemaining = in.readString(); 
+        totalPrice = in.readString(); 
+        adultTotalFare = in.readString(); 
+        adultTax = in.readString(); 
+        </span><span class="s0">byte </span><span class="s1">refundableBooleanVal = in.readByte(); 
+        refundableBoolean = refundableBooleanVal == </span><span class="s3">0x02 </span><span class="s1">? </span><span class="s0">null </span><span class="s1">: refundableBooleanVal != </span><span class="s3">0x00</span><span class="s1">; 
+        </span><span class="s0">byte </span><span class="s1">changePenaltiesBooleanVal = in.readByte(); 
+        changePenaltiesBoolean = changePenaltiesBooleanVal == </span><span class="s3">0x02 </span><span class="s1">? </span><span class="s0">null </span><span class="s1">: changePenaltiesBooleanVal != </span><span class="s3">0x00</span><span class="s1">; 
+        currency = in.readString(); 
+    } 
+ 
+    @Override 
+    </span><span class="s0">public int </span><span class="s1">describeContents() { 
+        </span><span class="s0">return </span><span class="s3">0</span><span class="s1">; 
+    } 
+ 
+    @Override 
+    </span><span class="s0">public void </span><span class="s1">writeToParcel(Parcel dest, </span><span class="s0">int </span><span class="s1">flags) { 
+        dest.writeString(departsAt); 
+        dest.writeString(arrivesAt); 
+        dest.writeString(originAirport); 
+        dest.writeString(originTerminal); 
+        dest.writeString(destinationAirport); 
+        dest.writeString(destinationMarketingAirline); 
+        dest.writeString(destinationOperatingAirline); 
+        dest.writeString(destinationFlightNumber); 
+        dest.writeString(destinationAircraft); 
+        dest.writeString(bookingInfoTravelClass); 
+        dest.writeString(bookingInfoBookingCode); 
+        dest.writeString(bookingInfoSeatsRemaining); 
+        dest.writeString(totalPrice); 
+        dest.writeString(adultTotalFare); 
+        dest.writeString(adultTax); 
+        </span><span class="s0">if </span><span class="s1">(refundableBoolean == </span><span class="s0">null</span><span class="s1">) { 
+            dest.writeByte((</span><span class="s0">byte</span><span class="s1">) (</span><span class="s3">0x02</span><span class="s1">)); 
+        } </span><span class="s0">else </span><span class="s1">{ 
+            dest.writeByte((</span><span class="s0">byte</span><span class="s1">) (refundableBoolean ? </span><span class="s3">0x01 </span><span class="s1">: </span><span class="s3">0x00</span><span class="s1">)); 
+        } 
+        </span><span class="s0">if </span><span class="s1">(changePenaltiesBoolean == </span><span class="s0">null</span><span class="s1">) { 
+            dest.writeByte((</span><span class="s0">byte</span><span class="s1">) (</span><span class="s3">0x02</span><span class="s1">)); 
+        } </span><span class="s0">else </span><span class="s1">{ 
+            dest.writeByte((</span><span class="s0">byte</span><span class="s1">) (changePenaltiesBoolean ? </span><span class="s3">0x01 </span><span class="s1">: </span><span class="s3">0x00</span><span class="s1">)); 
+        } 
+        dest.writeString(currency); 
+    } 
+ 
+    @SuppressWarnings(</span><span class="s4">&quot;unused&quot;</span><span class="s1">) 
+    </span><span class="s0">public static final </span><span class="s1">Parcelable.Creator&lt;FlightObject&gt; CREATOR = </span><span class="s0">new </span><span class="s1">Parcelable.Creator&lt;FlightObject&gt;() { 
+        @Override 
+        </span><span class="s0">public </span><span class="s1">FlightObject createFromParcel(Parcel in) { 
+            </span><span class="s0">return new </span><span class="s1">FlightObject(in); 
+        } 
+ 
+        @Override 
+        </span><span class="s0">public </span><span class="s1">FlightObject[] newArray(</span><span class="s0">int </span><span class="s1">size) { 
+            </span><span class="s0">return new </span><span class="s1">FlightObject[size]; 
+        } 
+    }; 
+}</span></pre>
+</body>
+</html>

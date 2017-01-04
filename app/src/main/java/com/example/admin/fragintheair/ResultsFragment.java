@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 public class ResultsFragment extends Fragment{
 
-    TextView text;
+    TextView text, text2;
 
     @Nullable
     @Override
@@ -23,6 +23,7 @@ public class ResultsFragment extends Fragment{
 
         View view = inflater.inflate(R.layout.results_fragment, null);
         text = (TextView) view.findViewById(R.id.text);
+        text2 = (TextView) view.findViewById(R.id.departureTime_textview);
         return view;
     }
 

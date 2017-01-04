@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>ResultsFragment.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+ResultsFragment.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">com.example.admin.fragintheair; 
+ 
+</span><span class="s0">import </span><span class="s1">android.app.Activity; 
+</span><span class="s0">import </span><span class="s1">android.os.Bundle; 
+</span><span class="s0">import </span><span class="s1">android.support.annotation.Nullable; 
+</span><span class="s0">import </span><span class="s1">android.support.v4.app.Fragment; 
+</span><span class="s0">import </span><span class="s1">android.view.LayoutInflater; 
+</span><span class="s0">import </span><span class="s1">android.view.View; 
+</span><span class="s0">import </span><span class="s1">android.view.ViewGroup; 
+</span><span class="s0">import </span><span class="s1">android.widget.TextView; 
+ 
+</span><span class="s2">/** 
+ * Created by Admin on 16/12/2016. 
+ */</span><span class="s1"> 
+ 
+</span><span class="s0">public class </span><span class="s1">ResultsFragment </span><span class="s0">extends </span><span class="s1">Fragment{ 
+ 
+    TextView text, text2; 
+ 
+    @Nullable 
+    @Override 
+    </span><span class="s0">public </span><span class="s1">View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) { 
+ 
+        View view = inflater.inflate(R.layout.results_fragment, </span><span class="s0">null</span><span class="s1">); 
+        text = (TextView) view.findViewById(R.id.text); 
+        text2 = (TextView) view.findViewById(R.id.departureTime_textview); 
+        </span><span class="s0">return </span><span class="s1">view; 
+    } 
+ 
+    @Override 
+    </span><span class="s0">public void </span><span class="s1">onAttach(Activity activity) { 
+        </span><span class="s0">super</span><span class="s1">.onAttach(activity); 
+    } 
+ 
+    @Override 
+    </span><span class="s0">public void </span><span class="s1">onStart() { 
+        </span><span class="s0">super</span><span class="s1">.onStart(); 
+ 
+        Bundle args = getArguments(); 
+        updateArticleView(args.getString(</span><span class="s3">&quot;value&quot;</span><span class="s1">)); 
+ 
+ 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">updateArticleView(String url) { 
+        text.setText(url); 
+    } 
+} 
+</span></pre>
+</body>
+</html>

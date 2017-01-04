@@ -216,7 +216,6 @@ public class MainFragment extends Fragment implements View.OnClickListener{
             //tis adeiazw ka8e fora prin na tis gemisw gia na diagrafoun oi times apo thn prohgoumenh klhsh sto idio session
 
             for(int i=0; i<parentArray.length(); i++) {
-
                 JSONObject finalObject = parentArray.getJSONObject(i);
 
                 String objectValue = finalObject.getString(value);

@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>CustomAdapter.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+CustomAdapter.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">com.example.admin.fragintheair; 
+ 
+</span><span class="s0">import </span><span class="s1">android.content.Context; 
+</span><span class="s0">import </span><span class="s1">android.support.annotation.NonNull; 
+</span><span class="s0">import </span><span class="s1">android.support.annotation.Nullable; 
+</span><span class="s0">import </span><span class="s1">android.util.Log; 
+</span><span class="s0">import </span><span class="s1">android.view.LayoutInflater; 
+</span><span class="s0">import </span><span class="s1">android.view.View; 
+</span><span class="s0">import </span><span class="s1">android.view.ViewGroup; 
+</span><span class="s0">import </span><span class="s1">android.widget.ArrayAdapter; 
+</span><span class="s0">import </span><span class="s1">android.widget.TextView; 
+ 
+</span><span class="s0">import </span><span class="s1">java.util.ArrayList; 
+ 
+</span><span class="s2">/** 
+ * Created by Admin on 20/12/2016. 
+ */</span><span class="s1"> 
+ 
+</span><span class="s0">class </span><span class="s1">CustomAdapter </span><span class="s0">extends </span><span class="s1">ArrayAdapter&lt;FlightObject&gt;{ 
+    ArrayList&lt;FlightObject&gt; objectList; 
+    FlightObject flightObject; 
+    </span><span class="s0">public </span><span class="s1">CustomAdapter(Context context, ArrayList&lt;FlightObject&gt; objects) { 
+        </span><span class="s0">super</span><span class="s1">(context, R.layout.single_row_xml, objects); 
+        objectList = objects; 
+ 
+    } 
+ 
+    @NonNull 
+    @Override 
+    </span><span class="s0">public </span><span class="s1">View getView(</span><span class="s0">int </span><span class="s1">position, View convertView, ViewGroup parent) { 
+        LayoutInflater inflater = LayoutInflater.from(getContext()); 
+        View customView = inflater.inflate(R.layout.single_row_xml, parent, </span><span class="s0">false</span><span class="s1">); 
+ 
+        flightObject = getItem(position); 
+        Log.i(</span><span class="s3">&quot;LOG TAGGG&quot;</span><span class="s1">, </span><span class="s3">&quot;custom adapter position &quot; </span><span class="s1">+ position); 
+         
+        String airlineText = flightObject.destinationOperatingAirline; 
+        String originAirportText = flightObject.originAirport; 
+        String destinationAirportText = flightObject.destinationAirport; 
+        String departureDateText = flightObject.departsAt; 
+        String arrivalDateText = flightObject.arrivesAt; 
+        String fareText = flightObject.adultTotalFare; 
+         
+ 
+        String departureTime, arrivalTime; 
+        </span><span class="s2">//int depInt, arrInt;</span><span class="s1"> 
+ 
+        TextView airline = (TextView) customView.findViewById(R.id.airline_textview); 
+        TextView originAirport = (TextView) customView.findViewById(R.id.originAirport_textview); 
+        TextView destinationAirport = (TextView) customView.findViewById(R.id.destinationAirport_textview); 
+        TextView departureDate = (TextView) customView.findViewById(R.id.departureTime_textview); 
+        TextView arrivalDate = (TextView) customView.findViewById(R.id.arrivalTime_textview); 
+        TextView fare = (TextView) customView.findViewById(R.id.fare_textview); 
+        </span><span class="s2">//TextView durationTotal = (TextView ) customView.findViewById(R.id.duration_textview);</span><span class="s1"> 
+ 
+ 
+        airline.setText(airlineText); 
+        originAirport.setText(originAirportText); 
+        destinationAirport.setText(destinationAirportText); 
+        departureTime = departureDateText.substring(departureDateText.lastIndexOf(</span><span class="s3">&quot;T&quot;</span><span class="s1">) + </span><span class="s4">1</span><span class="s1">); 
+        departureDate.setText(departureTime); 
+        arrivalTime = arrivalDateText.substring(arrivalDateText.lastIndexOf(</span><span class="s3">&quot;T&quot;</span><span class="s1">) + </span><span class="s4">1</span><span class="s1">); 
+        arrivalDate.setText(arrivalTime); 
+        fare.setText(fareText); 
+ 
+        </span><span class="s0">return </span><span class="s1">customView; 
+    } 
+ 
+    @Override 
+    </span><span class="s0">public int </span><span class="s1">getCount() { 
+        </span><span class="s0">return </span><span class="s1">objectList.size(); 
+    } 
+ 
+    @Override 
+    </span><span class="s0">public int </span><span class="s1">getPosition(FlightObject item) { 
+        </span><span class="s0">return </span><span class="s1">objectList.indexOf(item); 
+    } 
+ 
+    @Nullable 
+    @Override 
+    </span><span class="s0">public </span><span class="s1">FlightObject getItem(</span><span class="s0">int </span><span class="s1">position) { 
+        </span><span class="s0">return </span><span class="s1">objectList.get(position); 
+    } 
+ 
+    @Override 
+    </span><span class="s0">public long </span><span class="s1">getItemId(</span><span class="s0">int </span><span class="s1">position) { 
+        </span><span class="s0">return </span><span class="s1">position; 
+    } 
+} 
+</span></pre>
+</body>
+</html>
