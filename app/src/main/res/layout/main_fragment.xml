@@ -3,117 +3,111 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#5C6BC0"
     android:orientation="vertical"
-    android:weightSum="9"
-    android:background="#5C6BC0">
+    android:weightSum="9">
 
     <AutoCompleteTextView
         android:id="@+id/departure_airport_editText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:inputType="textPersonName"
-        android:hint="Αναχώρηση από:"
-        android:selectAllOnFocus="true"
-        android:layout_weight="1"
-        android:background="#C5CAE9"
         android:layout_margin="5dp"
+        android:layout_weight="1"
         android:alpha="0.6"
-        android:radius="20dp" />
+        android:background="#C5CAE9"
+        android:hint="Αναχώρηση από:"
+        android:inputType="textPersonName"
+        android:radius="20dp"
+        android:selectAllOnFocus="true" />
 
     <AutoCompleteTextView
         android:id="@+id/arrival_airport_editText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:inputType="textPersonName"
-        android:hint="Aφιξη σε:"
         android:layout_below="@+id/departure_airport_editText"
-        android:selectAllOnFocus="true"
-        android:layout_weight="1"
-        android:background="#C5CAE9"
         android:layout_margin="5dp"
-        android:alpha="0.6"/>
+        android:layout_weight="1"
+        android:alpha="0.6"
+        android:background="#C5CAE9"
+        android:hint="Aφιξη σε:"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="true" />
 
     <LinearLayout
         android:id="@+id/date_time_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:weightSum="2"
+        android:layout_margin="5dp"
         android:layout_weight="1"
-        android:clickable="true"
-        android:background="#C5CAE9"
         android:alpha="0.6"
-        android:layout_margin="5dp">
+        android:background="#C5CAE9"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:weightSum="2">
 
         <TextView
             android:id="@+id/departure_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="Date?"
-            android:onClick="setDate"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:layout_gravity="center"/>
+            android:inputType="textPersonName"
+            android:text="Date?" />
 
         <TextView
             android:id="@+id/arrive_by"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="Arrive By?"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:onClick="showDatePickerDialog"
-            android:layout_gravity="center"/>
+            android:inputType="textPersonName"
+            android:text="Arrive By?" />
 
     </LinearLayout>
-
-
-
 
 
     <LinearLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        android:layout_weight="1"
-        android:clickable="true"
-        android:onClick="showFragment1"
-        android:background="#C5CAE9"
         android:layout_margin="5dp"
-        android:alpha="0.6">
+        android:layout_weight="1"
+        android:alpha="0.6"
+        android:background="#C5CAE9"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:weightSum="3">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="4"
             android:layout_weight="1"
             android:clickable="false"
             android:contextClickable="false"
-            android:focusable="false">
+            android:focusable="false"
+            android:orientation="horizontal"
+            android:weightSum="4">
 
             <ImageButton
                 android:id="@+id/adults_button"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="@drawable/adult"
-                android:scaleType="fitXY"
                 android:clickable="false"
-                android:focusable="false" />
+                android:focusable="false"
+                android:scaleType="fitXY" />
 
             <EditText
                 android:id="@+id/adults_edit_text"
-                android:layout_width="0dp"
-                android:maxWidth="5dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="1"
                 android:clickable="false"
                 android:contextClickable="false"
-                android:focusableInTouchMode="false"
                 android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:maxWidth="5dp"
+                android:text="0"
                 android:textAlignment="center" />
 
         </LinearLayout>
@@ -121,32 +115,32 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="4"
             android:layout_weight="1"
             android:contextClickable="false"
-            android:focusable="false">
+            android:focusable="false"
+            android:orientation="horizontal"
+            android:weightSum="4">
 
             <ImageButton
                 android:id="@+id/kids_button"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="@drawable/kid"
-                android:scaleType="fitXY"
                 android:clickable="false"
-                android:focusable="false" />
+                android:focusable="false"
+                android:scaleType="fitXY" />
 
             <EditText
                 android:id="@+id/kids_edit_text"
-                android:layout_width="0dp"
-                android:maxWidth="5dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="0"
                 android:clickable="false"
                 android:contextClickable="false"
-                android:focusableInTouchMode="false"
                 android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:maxWidth="5dp"
+                android:text="0"
                 android:textAlignment="center" />
 
         </LinearLayout>
@@ -154,11 +148,11 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="4"
             android:layout_weight="1"
             android:contextClickable="false"
-            android:focusable="false">
+            android:focusable="false"
+            android:orientation="horizontal"
+            android:weightSum="4">
 
             <ImageButton
                 android:id="@+id/baby_button"
@@ -166,23 +160,22 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.61"
                 android:background="@drawable/baby"
-                android:scaleType="fitXY"
                 android:clickable="false"
-                android:focusable="false" />
+                android:focusable="false"
+                android:scaleType="fitXY" />
 
             <EditText
                 android:id="@+id/baby_edit_text"
-                android:layout_width="0dp"
-                android:maxWidth="5dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="0"
                 android:clickable="false"
                 android:contextClickable="false"
-                android:focusableInTouchMode="false"
                 android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:maxWidth="5dp"
+                android:text="0"
                 android:textAlignment="center" />
-
 
 
         </LinearLayout>
@@ -191,14 +184,14 @@
 
 
     <Button
-        android:text="Find me some flights!"
+        android:id="@+id/search_button"
         android:layout_width="226dp"
         android:layout_height="63dp"
-        android:id="@+id/search_button"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
         android:background="@color/colorPrimaryDark"
-        android:layout_marginTop="20dp" />
+        android:text="Find me some flights!" />
 
 
 </LinearLayout>
