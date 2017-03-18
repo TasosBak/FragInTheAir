@@ -3,7 +3,6 @@ package com.example.admin.fragintheair;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
  */
 
 public class MyListFragment extends ListFragment {
-    String LOG_TAG = "TTTAG LOG";
+    String LOG_TAG = "ListFragmentLog";
 
     public ArrayList<Result> results = new ArrayList<Result>();
 
@@ -28,13 +27,11 @@ public class MyListFragment extends ListFragment {
 
     public interface itemClickedListener {
         public void itemClicked(int position);
-
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        //Toast.makeText(getContext(), "position: " + position, Toast.LENGTH_SHORT).show();
     }
 
     @Nullable
@@ -42,7 +39,7 @@ public class MyListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_fragment, container, false);
         //list = (ListView)view.findViewById(android.R.id.list);
-        Log.i(LOG_TAG, "onCreateView");
+        //Log.i(LOG_TAG, "onCreateView");
         return view;
     }
 
@@ -51,24 +48,27 @@ public class MyListFragment extends ListFragment {
         super.onStart();
         Bundle args = getArguments();
         results = args.getParcelableArrayList("results");
-        Log.i(LOG_TAG, "onStart");
+        //Log.i(LOG_TAG, "onStart");
 
 
         CustomAdapter adapter = new CustomAdapter(getActivity(), emptyList);
         setListAdapter(adapter);
-
+        //Log.i(LOG_TAG, "prin th for" + String.valueOf(results.size()));
         for (int i = 0; i < results.size(); i++) {
             for (int j = 0; j < results.get(i).itineraries.size(); j++) {
                 adapter.add(results.get(i).itineraries.get(j));
+                //Log.i(LOG_TAG, "ADULTS: " + results.get(i).getItineraries().get(j).adults);
             }
         }
+
+        //Log.i(LOG_TAG, String.valueOf(results.size()));
 
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i(LOG_TAG, "onActivityCreated");
+        //Log.i(LOG_TAG, "onActivityCreated");
 
 
     }

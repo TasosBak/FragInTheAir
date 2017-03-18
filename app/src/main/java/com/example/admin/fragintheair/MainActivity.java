@@ -1,6 +1,8 @@
 package com.example.admin.fragintheair;
 
-import android.content.res.Resources;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,13 +24,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MainFragment.onChangeMadeListener {
+import static java.lang.Integer.valueOf;
+
+public class MainActivity extends AppCompatActivity implements MainFragment.onChangeMadeListener, PassengersAndClassFragment.OnOkButtonClickedListener, CustomAdapter.onItinerarySelectedInterface{
 
     private static final String API_KEY = BuildConfig.API_KEY;
     String LOG_TAG = "MY ACTIVITY LOG";
 
     String ORIGIN_PARAM = "";
     String DESTINATION_PARAM = "";
+    String DEPARTURE_DATE_PARAM = "";
+    Integer ADULTS_PARAM = 1;
+    Integer CHILDREN_PARAM = 0;
+    Integer INFANTS_PARAM = 0;
 
     String[] params;
     String info;
@@ -36,28 +44,43 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 
     String status, message;
 
+
     int bufferLength, connectionError = 0;
 
-
-
     ArrayList<Result> results = new ArrayList<Result>();
-    AsyncTask<String, Integer, String> klhshAsyncTask;
+    AsyncTask<String, Integer, String> klhshAsyncTask, fetchAirlineCodeData;
+
+    ArrayList<String> codes = new ArrayList<String>();
+    ArrayList<String> names = new ArrayList<String>();
+
+    ArrayList<Itinerary> tempList = new ArrayList<>();
+
+    Boolean networkUp = true;
+    Boolean codesDownloaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Resources resources = getResources();
-        params = resources.getStringArray(R.array.string_array_name);
+        //Resources resources = getResources();
+        //params = resources.getStringArray(R.array.string_array_name);
+
+        //checking network connection
+        ConnectivityManager connMng = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMng.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            fetchAirlineCodeData = new FetchAirlineNameUsingAirlineCode().execute();
+            codesDownloaded = true;
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "No network connection available. Can't fetch airline codes", Toast.LENGTH_SHORT).show();
+            networkUp = false;
+        }
 
         MainFragment mainFragment = new MainFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.activity_main, mainFragment, null).commit();
-
-
-
     }
-
 
     public void showStatusDialog() {
         Bundle args = new Bundle();
@@ -73,35 +96,34 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 
     }
 
-
-
-
     @Override
     public void onChangeMade(int id, String value) {
 
-        switch (id) {
-            case 1:
-                ORIGIN_PARAM = value;
-                Toast.makeText(getApplicationContext(), "ORIGIN_PARAM " + ORIGIN_PARAM, Toast.LENGTH_LONG).show();
-                break;
-            case 2:
-                DESTINATION_PARAM = value;
-                break;
-            case 3:
-
-                //ka8arizei th lista ka8e fora pou exoume nea anazhthsh
-                results.clear();
-
-                klhshAsyncTask = new FetchInfo().execute(null, null, info);
+        if(id == 1)
+            ORIGIN_PARAM = value;
+        else if(id == 2)
+            DESTINATION_PARAM = value;
+        else if(id == 3)
+            DEPARTURE_DATE_PARAM = value;
+        else if(id == 4) {
+            ADULTS_PARAM = valueOf(value);
+            Toast.makeText(getApplicationContext(), "value of: " + valueOf(value).toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "ADULTS_PARAM: " + ADULTS_PARAM, Toast.LENGTH_SHORT).show();
+        }
+        else if(id == 5) {
+            CHILDREN_PARAM = valueOf(value);
+        }
+        else if(id == 6) {
+            INFANTS_PARAM = valueOf(value);
+        }
+        else if(id == 7) {
+            results.clear();
+            klhshAsyncTask = new FetchInfo().execute();
 
 //                FragmentManager manager = getSupportFragmentManager();
 //                StatusDialog statusDialog = new StatusDialog();
-//                statusDialog.show(manager, "StatudDialog");
+//               statusDialog.show(manager, "StatudDialog");
 
-
-
-
-                Log.i(LOG_TAG, "info: " + info);
 //                try {
 //                    klhshAsyncTask.get(0, TimeUnit.MILLISECONDS);
 //                } catch (InterruptedException e) {
@@ -111,9 +133,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 //                } catch (TimeoutException e) {
 //                    e.printStackTrace();
 //                }
-                break;
         }
-
 
 
     }
@@ -137,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
                 return null;
             }
 
+            results.clear();
             JSONArray resultsArray = parentObject.getJSONArray("results");
 
             StringBuffer finalStringBuffer = new StringBuffer();
@@ -156,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 
 
              */
-            Log.d(LOG_TAG, "resultsArray length eksw apo th for = " + Integer.toString(resultsArray.length()));
+            //Log.d(LOG_TAG, "resultsArray length eksw apo th for = " + Integer.toString(resultsArray.length()));
             for(int i=0; i<resultsArray.length(); i++) {
 
 //                Log.d(LOG_TAG, "resultsArray length = " + resultsArray.length());
@@ -188,6 +209,14 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
                     results.get(i).itineraries.get(j).setOutbounds(new ArrayList<Flight>());
                     results.get(i).itineraries.get(j).setResultId(i);
 
+                    //Log.i(LOG_TAG, "result: " + i + ", itinerary: " + j + ", adults prin to set: " +  results.get(i).itineraries.get(j).getAdults());
+                    results.get(i).itineraries.get(j).setAdults(ADULTS_PARAM);
+                    //Log.i(LOG_TAG, "result: " + i + ", itinerary: " + j + ", adults meta to set: " +  results.get(i).itineraries.get(j).getAdults());
+                    //Log.i(LOG_TAG, "ADULTS_PARAM: " + ADULTS_PARAM);
+                    results.get(i).itineraries.get(j).setChildren(CHILDREN_PARAM);
+                    results.get(i).itineraries.get(j).setInfants(INFANTS_PARAM);
+
+
 
                     //gia ta outbound
                     for (int f = 0; f < outboundFlightsArray.length(); f++) {
@@ -199,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
                         String departsAt = flightObject.getString("departs_at");
                         String arrivesAt = flightObject.getString("arrives_at");
 
-                        Log.i(LOG_TAG, "result: " + i + ", itinerary: " + j + ", outbound: " + f);
+                        //Log.i(LOG_TAG, "result: " + i + ", itinerary: " + j + ", outbound: " + f);
 
 
 //                        Result tempResult;
@@ -230,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
                         try {
                             originTerminal = originObject.getString("terminal");
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
 
                         JSONObject destinationObject = flightObject.getJSONObject("destination");
@@ -263,7 +292,15 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
                         results.get(i).itineraries.get(j).outbounds.get(f).setOriginAirport(originAirport);
                         results.get(i).itineraries.get(j).outbounds.get(f).setOriginTerminal(originTerminal);
                         results.get(i).itineraries.get(j).outbounds.get(f).setDestinationAirport(destinationAirport);
-                        results.get(i).itineraries.get(j).outbounds.get(f).setMarketingAirline(marketingAirline);
+
+                        try {
+                            results.get(i).itineraries.get(j).outbounds.get(f).setMarketingAirline(names.get(codes.indexOf(marketingAirline)));
+                        } catch (Exception e) {
+                            results.get(i).itineraries.get(j).outbounds.get(f).setMarketingAirline("Airline not provided");
+                            e.printStackTrace();
+                        }
+                        //results.get(i).itineraries.get(j).outbounds.get(f).setMarketingAirline(marketingAirline);
+
                         results.get(i).itineraries.get(j).outbounds.get(f).setOperatingAirline(operatingAirline);
                         results.get(i).itineraries.get(j).outbounds.get(f).setFlightNumber(flightNumber);
                         results.get(i).itineraries.get(j).outbounds.get(f).setAircraft(aircraft);
@@ -412,6 +449,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
                             Boolean changePenaltiesBoolean = restrictionObject.getBoolean("change_penalties");
                             results.get(i).itineraries.get(j).fare.setRefundableBoolean(refundableBoolean);
                             results.get(i).itineraries.get(j).fare.setChangePenaltiesBoolean(changePenaltiesBoolean);
+                            results.get(i).itineraries.get(j).getOutbounds().get(i).getMarketingAirline();
                         }
                     }
 
@@ -457,7 +495,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 
 
             }
-            Log.e(LOG_TAG, " final string buffer: " + finalStringBuffer.toString());
+            //Log.e(LOG_TAG, " final string buffer: " + finalStringBuffer.toString());
             return finalStringBuffer.toString();
 
         }
@@ -476,10 +514,15 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 
                 Uri uri = Uri.parse(BASE_URL)
                         .buildUpon()
-                        .appendQueryParameter("origin", "LHR")
-                        .appendQueryParameter("destination", "ATH")
-                        .appendQueryParameter("departure_date", "2017-01-30")
-                        //.appendQueryParameter("return_date", "2016-12-30")
+                        .appendQueryParameter("origin", ORIGIN_PARAM)
+                        .appendQueryParameter("destination", DESTINATION_PARAM)
+                        .appendQueryParameter("departure_date", DEPARTURE_DATE_PARAM)
+                        //.appendQueryParameter("origin", "LON")
+                        //.appendQueryParameter("destination", "PAR")
+                        //.appendQueryParameter("departure_date", "2017-05-30")
+                        .appendQueryParameter("adults", ADULTS_PARAM.toString())
+                        .appendQueryParameter("children", CHILDREN_PARAM.toString())
+                        .appendQueryParameter("infants", INFANTS_PARAM.toString())
 
                         .appendQueryParameter("currency", "EUR")
                         .appendQueryParameter("nonstop","false")
@@ -498,7 +541,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 
 
                 if(!urlConnection.getResponseMessage().equals("OK")) {
-
+                    Log.v(LOG_TAG, "ERROR STO INPUT STREAM");
                     Log.v(LOG_TAG, "input stream: " + urlConnection.getResponseMessage());
                     InputStream errorStream = urlConnection.getErrorStream();
                     BufferedReader bReader = null;
@@ -549,7 +592,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
 
                 if (inputStream == null) {
                     // Nothing to do.
-
+                    Log.v(LOG_TAG, "mpainei sthn if gia input stream==null: " );
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -579,7 +622,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
                 }
 
                 jsonString = buffer.toString();
-                Log.v(LOG_TAG, "To lathos:" + jsonString);
+                //Log.v(LOG_TAG, "To lathos:" + jsonString);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the data, there's no point in attemping
@@ -619,6 +662,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
         @Override
         protected void onPostExecute(String strings) {
             super.onPostExecute(strings);
+
             //Toast.makeText(getApplicationContext(), "*****on post execute****" + strings, Toast.LENGTH_LONG).show();
             //Log.e(LOG_TAG, "ON POST EXECUTE " + strings);
             //ShowAlertDialogWithListview();
@@ -660,7 +704,180 @@ public class MainActivity extends AppCompatActivity implements MainFragment.onCh
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (!codesDownloaded) {
+                fetchAirlineCodeData = new FetchAirlineNameUsingAirlineCode().execute();
+                codesDownloaded = true;
+            }
         }
     }
 
+    @Override
+    public void onOkButtonClicked(String testStr) {
+
+    }
+
+    @Override
+    public void onItinerarySelected(Itinerary itinerary) {
+        Log.i(LOG_TAG, "fare: " + itinerary.getFare().getTotalPrice() + "departs at: " + itinerary.getOutbounds().get(0).departsAt
+                + ", adults: " + itinerary.adults);
+        DetailsFragment detailsFragment = new DetailsFragment();
+
+        Bundle itinerarySelected = new Bundle();
+        //tempList.add()
+        itinerarySelected.putParcelable("itinerary selected", itinerary);
+        detailsFragment.setArguments(itinerarySelected);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.activity_main, detailsFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+        Log.i(LOG_TAG, "onItinerarySelected: " + results.get(0).getItineraries().get(0).getAdults());
+
+    }
+
+    public class FetchAirlineNameUsingAirlineCode extends AsyncTask<String,Integer,String> {
+
+        private static final String IATA_API_KEY = BuildConfig.IATA_API_KEY;
+
+        private String getDataFromJson(String airportCodeToNameJsonString)
+                throws JSONException {
+
+
+            JSONObject parentObject = new JSONObject(airportCodeToNameJsonString);
+
+            JSONObject requestObject = parentObject.getJSONObject("request");
+            JSONObject keyObject = requestObject.getJSONObject("key");
+            Integer usageByHour = keyObject.getInt("usage_by_hour");
+
+
+            JSONArray responseArray = parentObject.getJSONArray("response");
+
+            StringBuffer finalStringBuffer = new StringBuffer();
+
+            //Log.v("*********","responseArray.length() " + responseArray.length() + "\n");
+            //Log.v("*********","codes.size " + codes.size() + "\n");
+            //Log.v("*********", "usageByHour: " + usageByHour);
+            for(int i=0; i<responseArray.length(); i++) {
+                JSONObject responseObject = responseArray.getJSONObject(i);
+
+                String objectCode = responseObject.getString("code");
+                String objectName = responseObject.getString("name");
+
+                finalStringBuffer.append(objectCode + " - " + objectName + "\n");
+                //Log.v("*********", objectCode + " - " + objectName + "\n");
+                //Log.v("*********","codes.size " + codes.size() + "\n");
+
+                //kanonika elegxw an uparxei ena zeugari kwdikwn eidh stous pinakes etsi wste na mh to vazei
+                //if(!codes.contains(objectCode))
+                codes.add(i, objectCode);
+
+                //if(!names.contains(objectName))
+                names.add(i, objectName);
+            }
+
+            //Log.v("*********", "Megethos names: " + names.size());
+
+            return finalStringBuffer.toString();
+
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String airportCodeToNameJsonString = null;
+
+            try {
+                final String AIRPORT_CODE_TO_NAME_BASE_URL = "https://iatacodes.org/api/v6/airlines?api_key=" + IATA_API_KEY ;
+
+                Uri airportCodeToNameUri = Uri.parse(AIRPORT_CODE_TO_NAME_BASE_URL).buildUpon().build();
+
+                URL airportCodeToNameStringUrl = new URL(airportCodeToNameUri.toString());
+
+                //Log.v("*********", "Built URI: " + airportCodeToNameUri.toString());
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) airportCodeToNameStringUrl.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+
+                airportCodeToNameJsonString = buffer.toString();
+                Log.v("****", "JSON String: " + airportCodeToNameJsonString);
+            } catch (IOException e) {
+                Log.e("****", "Error ", e);
+                // If the code didn't successfully get the data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("****", "Error closing stream", e);
+                    }
+                }
+            }
+            try {
+                return getDataFromJson(airportCodeToNameJsonString);
+            } catch (JSONException e) {
+                Log.e("**********", e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            // This will only happen if there was an error getting or parsing the forecast.
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+        }
+
+        @Override
+        protected void onPostExecute(String strings) {
+            super.onPostExecute(strings);
+            Toast.makeText(getApplicationContext(), "Airline codes have been retrieved", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Toast.makeText(getApplicationContext(), "Retrieving airline codes", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+
 }
+
+
